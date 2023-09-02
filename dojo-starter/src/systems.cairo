@@ -31,6 +31,38 @@ mod spawn {
 }
 
 #[system]
+mod random {
+    use core::result::ResultTrait;
+    use core::traits::Destruct;
+    use array::ArrayTrait;
+    use box::BoxTrait;
+    use traits::{Into, TryInto};
+    use option::OptionTrait;
+    use dojo::world::Context;
+
+    use dojo_examples::components::Random;
+    use starknet::syscalls::get_execution_info_syscall;
+    use starknet::info::ExecutionInfo;
+    use starknet::info::BlockInfo;
+
+    fn execute(ctx: Context) {
+        let execution_info:ExecutionInfo = get_execution_info_syscall().unwrap().unbox();
+        let block_info:BlockInfo = execution_info.block_info.unbox(); // Reference to BlockInfo
+        let block_number:u64 = block_info.block_number;
+
+        set!(
+            ctx.world,
+            (
+                Random {
+                    player: ctx.origin, r: block_number
+                    },
+            )
+        );
+        return ();
+    }
+}
+
+#[system]
 mod move {
     use array::ArrayTrait;
     use box::BoxTrait;

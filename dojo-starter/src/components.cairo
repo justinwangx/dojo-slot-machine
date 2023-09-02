@@ -16,6 +16,14 @@ struct Position {
     y: u32
 }
 
+#[derive(Component, Copy, Drop, Serde, SerdeLen)]
+struct Random {
+    #[key]
+    player: ContractAddress,
+    r: u64
+}
+
+
 trait PositionTrait {
     fn is_zero(self: Position) -> bool;
     fn is_equal(self: Position, b: Position) -> bool;
