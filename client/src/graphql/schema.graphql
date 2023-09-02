@@ -12,6 +12,9 @@ query getEntities {
             x
             y
           }
+          ... on Random {
+            r
+          }
         }
       }
     }
