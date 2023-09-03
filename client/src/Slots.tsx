@@ -1,7 +1,7 @@
 import { clear } from "console";
 import React from "react";
 
-const totalSymbols = 9;
+const totalSymbols = 5;
 function RepeatButton(props) {
   return (
     <svg
@@ -194,7 +194,7 @@ class Spinner extends React.Component {
     position: 0,
     lastPosition: null,
   };
-  static iconHeight = 188;
+  static iconHeight = 128;
   multiplier = 1;
 
   start = this.setStartPosition();
@@ -202,7 +202,7 @@ class Spinner extends React.Component {
 
   setStartPosition() {
     return (
-      80 + Math.floor(Math.random() * totalSymbols) * Spinner.iconHeight * -1
+      108 + Math.floor(Math.random() * totalSymbols) * Spinner.iconHeight * -1
     );
   }
 
@@ -255,7 +255,7 @@ class Spinner extends React.Component {
 
     return (
       <div
-        style={{ backgroundPosition: "5px " + position + "px" }}
+        style={{ backgroundPosition: "16px " + position + "px" }}
         className={`icons`}
       />
     );
