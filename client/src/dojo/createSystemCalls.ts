@@ -82,6 +82,7 @@ export function createSystemCalls(
       setComponent(contractComponents.Random, entity, {
         r: randomEvent.r,
       });
+      return randomEvent.r;
     } catch (e) {
       console.log(e);
     }
@@ -212,7 +213,7 @@ export const parseEvent = (
         const randomData: Random = {
           type: ComponentEvents.Random,
           entity: raw.data[2],
-          r: Number(raw.data[5]),
+          r: raw.data[5],
         };
 
         events.push(randomData);

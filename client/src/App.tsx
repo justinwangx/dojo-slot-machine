@@ -3,7 +3,7 @@ import { useDojo } from "./DojoContext";
 import { useComponentValue } from "@dojoengine/react";
 import { Direction } from "./dojo/createSystemCalls";
 import { EntityIndex, setComponent } from "@latticexyz/recs";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { getFirstComponentByType } from "./utils";
 import { Moves, Position, Random, Block } from "./generated/graphql";
 import Slots from "./Slots";
@@ -15,6 +15,7 @@ export const formatAddress = (address: string) => {
 };
 
 function App() {
+  const [randomValue, setRandomValue] = useState<Random>();
   const {
     setup: {
       systemCalls: { spawn, move, random },
@@ -24,65 +25,20 @@ function App() {
     account: { create, list, select, account, isDeploying },
   } = useDojo();
 
-  // entity id - this example uses the account address as the entity id
-  const entityId = account.address;
-
-  // get current component values
-  const position = useComponentValue(
-    Position,
-    parseInt(entityId.toString()) as EntityIndex
-  );
-  const moves = useComponentValue(
-    Moves,
-    parseInt(entityId.toString()) as EntityIndex
-  );
-  const randomValue = useComponentValue(
-    Random,
-    parseInt(entityId.toString()) as EntityIndex
-  );
-  const block = useComponentValue(
-    Block,
-    parseInt(entityId.toString()) as EntityIndex
-  );
+  const fetchData = async () => {
+    const { data } = await graphSdk.getEntities();
+    if (data) {
+      const rand = getFirstComponentByType(
+        data.entities?.edges,
+        "Random",
+        account.address
+      ).r;
+      if (rand !== randomValue) setRandomValue(rand);
+    }
+  };
 
   useEffect(() => {
-    if (!entityId) return;
-
-    const fetchData = async () => {
-      const { data } = await graphSdk.getEntities();
-      if (data) {
-        const remaining = getFirstComponentByType(
-          data.entities?.edges,
-          "Moves"
-        ) as Moves;
-        const position = getFirstComponentByType(
-          data.entities?.edges,
-          "Position"
-        ) as Position;
-        const randomValue = getFirstComponentByType(
-          data.entities?.edges,
-          "Random"
-        ) as Random;
-        const block = getFirstComponentByType(
-          data.entities?.edges,
-          "Block"
-        ) as Block;
-
-        setComponent(Moves, parseInt(entityId.toString()) as EntityIndex, {
-          remaining: remaining.remaining,
-        });
-        setComponent(Position, parseInt(entityId.toString()) as EntityIndex, {
-          x: position.x,
-          y: position.y,
-        });
-        setComponent(Random, parseInt(entityId.toString()) as EntityIndex, {
-          r: randomValue?.r,
-        });
-        setComponent(Block, parseInt(entityId.toString()) as EntityIndex, {
-          b: block?.b,
-        });
-      }
-    };
+    if (!account || !account.address) return;
     fetchData();
   }, [account.address]);
 
@@ -91,8 +47,10 @@ function App() {
     return (random % div) / div;
   }
 
-  function requestRandom() {
-    random(account);
+  async function requestRandom() {
+    const r = await random(account);
+    console.log(r);
+    setRandomValue(r);
   }
 
   return (
@@ -106,7 +64,6 @@ function App() {
         // justify="left"
       >
         <Button
-          color="#F88975"
           style={{ backgroundColor: "#FE3733" }}
           isDisabled={isDeploying || account != undefined}
           isLoading={isDeploying}
@@ -117,7 +74,7 @@ function App() {
       </HStack>
       <Slots
         requestRandom={requestRandom}
-        random={randomValue ? randomMod(randomValue["r"]) : 0}
+        random={randomValue ? randomMod(randomValue) : 0}
       />
     </div>
   );

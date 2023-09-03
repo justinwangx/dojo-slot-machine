@@ -82,13 +82,11 @@ class App extends React.Component {
   ];
 
   finishHandler(value) {
-    console.log(value);
     const { matches } = this.state;
     matches.push(value);
     this.setState({ matches });
 
     if (matches.length === 3) {
-      console.log(matches);
       const { winner } = this.state;
       const first = matches[0];
       const results = matches.every((match) => match === first);
