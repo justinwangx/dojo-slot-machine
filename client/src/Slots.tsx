@@ -1,12 +1,22 @@
+import { clear } from "console";
 import React from "react";
 
+const totalSymbols = 9;
 function RepeatButton(props) {
   return (
-    <button
-      aria-label="Play again."
+    <svg
       id="repeatButton"
       onClick={props.onClick}
-    ></button>
+      width="1000"
+      height="1000"
+      viewBox="0 0 512 512"
+      xmlns="http://www.w3.org/2000/svg"
+    >
+      <path
+        fill="#FE3733"
+        d="M252.314 19.957c-72.036.363-142.99 33.534-189.18 95.97c-69.83 94.39-59.125 223.32 19.85 304.993l-37.238 50.332l151.22-22.613L174.35 297.42l-43.137 58.308c-44.08-54.382-47.723-133.646-4.16-192.53c30.676-41.466 77.863-63.504 125.758-63.753a156.808 156.808 0 0 1 48.645 7.467l-6.963-46.55a191.054 191.054 0 0 0-71.017-.997c-59.232 7.322-113.994 39.918-148.157 91.215c35.65-65.89 103.774-105.918 176.043-107.744a204.322 204.322 0 0 1 49.62 4.84l48.608-7.268c-31.14-13.906-64.32-20.62-97.274-20.453zm212.93 22.055l-151.217 22.61l22.614 151.22l41.126-55.588c42.204 54.29 45.092 132.048 2.187 190.043c-40.22 54.367-108.82 75.32-170.19 57.566l6.522 43.598a192.699 192.699 0 0 0 86.203-3.07c37.448-5.957 73.34-22.05 103.16-47.728c-49.196 54.65-122.615 77.514-191.744 64.34l-55.8 8.344c99.03 43.7 218.402 14.77 285.51-75.938c69.13-93.445 59.34-220.743-17.483-302.53l39.114-52.866z"
+      />
+    </svg>
   );
 }
 
@@ -23,17 +33,39 @@ class App extends React.Component {
     super(props);
     this.state = {
       winner: null,
+      targets: [0, 0, 0],
+      matches: [],
     };
     this.finishHandler = this.finishHandler.bind(this);
     this.handleClick = this.handleClick.bind(this);
   }
 
+  componentDidUpdate(
+    prevProps: Readonly<{}>,
+    prevState: Readonly<{}>,
+    snapshot?: any
+  ): void {
+    if (prevProps.random !== this.props.random) {
+      const random = this.props.random;
+      const target1 = Math.floor(random * totalSymbols);
+      let remainder = random * totalSymbols;
+      remainder = remainder - Math.floor(remainder);
+      const target2 = Math.floor(remainder * totalSymbols);
+      remainder = remainder * totalSymbols;
+      remainder = remainder - Math.floor(remainder);
+      const target3 = Math.floor(remainder * totalSymbols);
+      this.setState({ targets: [target1, target2, target3] });
+
+      this.setState({ winner: null });
+      this.emptyArray();
+      this._child1.forceUpdateHandler();
+      this._child2.forceUpdateHandler();
+      this._child3.forceUpdateHandler();
+    }
+  }
+
   handleClick() {
-    this.setState({ winner: null });
-    this.emptyArray();
-    this._child1.forceUpdateHandler();
-    this._child2.forceUpdateHandler();
-    this._child3.forceUpdateHandler();
+    this.props.requestRandom();
   }
 
   static loser = [
@@ -49,21 +81,23 @@ class App extends React.Component {
     "Don't hate the coder",
   ];
 
-  static matches = [];
-
   finishHandler(value) {
-    App.matches.push(value);
+    console.log(value);
+    const { matches } = this.state;
+    matches.push(value);
+    this.setState({ matches });
 
-    if (App.matches.length === 3) {
+    if (matches.length === 3) {
+      console.log(matches);
       const { winner } = this.state;
-      const first = App.matches[0];
-      const results = App.matches.every((match) => match === first);
+      const first = matches[0];
+      const results = matches.every((match) => match === first);
       this.setState({ winner: results });
     }
   }
 
   emptyArray() {
-    App.matches = [];
+    this.setState({ matches: [] });
   }
 
   render() {
@@ -85,7 +119,7 @@ class App extends React.Component {
     return (
       <div>
         {winningSound}
-        <h1 style={{ color: "white" }}>
+        {/*<h1 style={{ color: "white" }}>
           <span>
             {winner === null
               ? "Waiting…"
@@ -93,7 +127,10 @@ class App extends React.Component {
               ? "🤑 Pure skill! 🤑"
               : getLoser()}
           </span>
-        </h1>
+            </h1>*/}
+        <div className={`slots-container`}>
+          <img src="../public/Slots.png" alt="Slots" />
+        </div>
 
         <div className={`spinner-container`}>
           <Spinner
@@ -102,6 +139,7 @@ class App extends React.Component {
               this._child1 = child;
             }}
             timer="1000"
+            target={this.state.targets[0]}
           />
           <Spinner
             onFinish={this.finishHandler}
@@ -109,6 +147,7 @@ class App extends React.Component {
               this._child2 = child;
             }}
             timer="1400"
+            target={this.state.targets[1]}
           />
           <Spinner
             onFinish={this.finishHandler}
@@ -116,6 +155,7 @@ class App extends React.Component {
               this._child3 = child;
             }}
             timer="2200"
+            target={this.state.targets[2]}
           />
           <div className="gradient-fade"></div>
         </div>
@@ -157,13 +197,15 @@ class Spinner extends React.Component {
     lastPosition: null,
   };
   static iconHeight = 188;
-  multiplier = Math.floor(Math.random() * (4 - 1) + 1);
+  multiplier = 1;
 
   start = this.setStartPosition();
   speed = Spinner.iconHeight * this.multiplier;
 
   setStartPosition() {
-    return Math.floor(Math.random() * 9) * Spinner.iconHeight * -1;
+    return (
+      80 + Math.floor(Math.random() * totalSymbols) * Spinner.iconHeight * -1
+    );
   }
 
   moveBackground() {
@@ -175,27 +217,23 @@ class Spinner extends React.Component {
 
   getSymbolFromPosition() {
     const { position } = this.state;
-    const totalSymbols = 9;
-    const maxPosition = Spinner.iconHeight * (totalSymbols - 1) * -1;
-    const moved = (this.props.timer / 100) * this.multiplier;
-    const startPosition = this.start;
-    let currentPosition = startPosition;
 
-    for (let i = 0; i < moved; i++) {
-      currentPosition -= Spinner.iconHeight;
-
-      if (currentPosition < maxPosition) {
-        currentPosition = 0;
-      }
-    }
-
-    this.props.onFinish(currentPosition);
+    const thisSymbol = Math.abs(
+      Math.floor(position / Spinner.iconHeight) % totalSymbols
+    );
+    return thisSymbol;
   }
 
   tick() {
     if (this.state.timeRemaining <= 0) {
-      clearInterval(this.timer);
-      this.getSymbolFromPosition();
+      //clearInterval(this.timer);
+      const curSymbol = this.getSymbolFromPosition();
+      if (curSymbol === this.props.target) {
+        this.props.onFinish(curSymbol);
+        clearInterval(this.timer);
+      } else {
+        this.moveBackground();
+      }
     } else {
       this.moveBackground();
     }
@@ -219,7 +257,7 @@ class Spinner extends React.Component {
 
     return (
       <div
-        style={{ backgroundPosition: "0px " + position + "px" }}
+        style={{ backgroundPosition: "5px " + position + "px" }}
         className={`icons`}
       />
     );

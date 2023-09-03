@@ -7,6 +7,12 @@ import { useEffect } from "react";
 import { getFirstComponentByType } from "./utils";
 import { Moves, Position, Random, Block } from "./generated/graphql";
 import Slots from "./Slots";
+import { Button, HStack, Link, Text } from "@chakra-ui/react";
+
+// Truncate starknet address
+export const formatAddress = (address: string) => {
+  return address.slice(0, 6) + "..." + address.slice(-4);
+};
 
 function App() {
   const {
@@ -44,7 +50,6 @@ function App() {
 
     const fetchData = async () => {
       const { data } = await graphSdk.getEntities();
-
       if (data) {
         const remaining = getFirstComponentByType(
           data.entities?.edges,
@@ -82,35 +87,39 @@ function App() {
   }, [account.address]);
 
   function randomMod(random) {
-    console.log("random", random);
-    return random % 1000;
+    const div = 1000000;
+    return (random % div) / div;
+  }
+
+  function requestRandom() {
+    random(account);
   }
 
   return (
-    <>
-      <Slots />
-      <button onClick={create}>
-        {isDeploying ? "deploying burner" : "create burner"}
-      </button>
-      <div className="card">
-        select signer:{" "}
-        <select onChange={(e) => select(e.target.value)}>
-          {list().map((account, index) => {
-            return (
-              <option value={account.address} key={index}>
-                {account.address}
-              </option>
-            );
-          })}
-        </select>
-      </div>
-      <div className="random">
-        <button onClick={() => random(account)}>Randomize</button>
-        <div>
-          Random: {randomValue ? randomMod(randomValue["r"]) : "No Value"}
-        </div>
-      </div>
-    </>
+    <div>
+      <HStack
+        position="absolute"
+        top="0"
+        w="full"
+        p="20px"
+        gap="60px"
+        // justify="left"
+      >
+        <Button
+          color="#F88975"
+          style={{ backgroundColor: "#FE3733" }}
+          isDisabled={isDeploying || account != undefined}
+          isLoading={isDeploying}
+          onClick={create}
+        >
+          {account ? formatAddress(account.address) : "Create Burner"}
+        </Button>
+      </HStack>
+      <Slots
+        requestRandom={requestRandom}
+        random={randomValue ? randomMod(randomValue["r"]) : 0}
+      />
+    </div>
   );
 }
 
