@@ -20,9 +20,15 @@ struct Position {
 struct Random {
     #[key]
     player: ContractAddress,
-    r: u32
+    r: u128
 }
 
+#[derive(Component, Copy, Drop, Serde, SerdeLen)]
+struct Block {
+    #[key]
+    player: ContractAddress,
+    b: u64
+}
 
 trait PositionTrait {
     fn is_zero(self: Position) -> bool;

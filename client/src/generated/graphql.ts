@@ -24,7 +24,43 @@ export type Scalars = {
   u64: { input: any; output: any; }
 };
 
-export type ComponentUnion = Moves | Position | Random;
+export type Block = {
+  __typename?: 'Block';
+  b?: Maybe<Scalars['u64']['output']>;
+  entity?: Maybe<Entity>;
+};
+
+export type BlockConnection = {
+  __typename?: 'BlockConnection';
+  edges?: Maybe<Array<Maybe<BlockEdge>>>;
+  totalCount: Scalars['Int']['output'];
+};
+
+export type BlockEdge = {
+  __typename?: 'BlockEdge';
+  cursor: Scalars['Cursor']['output'];
+  node?: Maybe<Block>;
+};
+
+export type BlockOrder = {
+  direction: Direction;
+  field: BlockOrderOrderField;
+};
+
+export enum BlockOrderOrderField {
+  B = 'B'
+}
+
+export type BlockWhereInput = {
+  b?: InputMaybe<Scalars['Int']['input']>;
+  bGT?: InputMaybe<Scalars['Int']['input']>;
+  bGTE?: InputMaybe<Scalars['Int']['input']>;
+  bLT?: InputMaybe<Scalars['Int']['input']>;
+  bLTE?: InputMaybe<Scalars['Int']['input']>;
+  bNEQ?: InputMaybe<Scalars['Int']['input']>;
+};
+
+export type ComponentUnion = Block | Moves | Position | Random;
 
 export enum Direction {
   Asc = 'ASC',
@@ -157,6 +193,7 @@ export type PositionWhereInput = {
 
 export type Query = {
   __typename?: 'Query';
+  blockComponents?: Maybe<BlockConnection>;
   entities?: Maybe<EntityConnection>;
   entity: Entity;
   event: Event;
@@ -168,6 +205,16 @@ export type Query = {
   systemCall: SystemCall;
   systemCalls?: Maybe<SystemCallConnection>;
   systems?: Maybe<SystemConnection>;
+};
+
+
+export type QueryBlockComponentsArgs = {
+  after?: InputMaybe<Scalars['Cursor']['input']>;
+  before?: InputMaybe<Scalars['Cursor']['input']>;
+  first?: InputMaybe<Scalars['Int']['input']>;
+  last?: InputMaybe<Scalars['Int']['input']>;
+  order?: InputMaybe<BlockOrder>;
+  where?: InputMaybe<BlockWhereInput>;
 };
 
 
@@ -232,7 +279,7 @@ export type QuerySystemCallArgs = {
 export type Random = {
   __typename?: 'Random';
   entity?: Maybe<Entity>;
-  r?: Maybe<Scalars['u64']['output']>;
+  r?: Maybe<Scalars['felt252']['output']>;
 };
 
 export type RandomConnection = {
@@ -257,12 +304,12 @@ export enum RandomOrderOrderField {
 }
 
 export type RandomWhereInput = {
-  r?: InputMaybe<Scalars['Int']['input']>;
-  rGT?: InputMaybe<Scalars['Int']['input']>;
-  rGTE?: InputMaybe<Scalars['Int']['input']>;
-  rLT?: InputMaybe<Scalars['Int']['input']>;
-  rLTE?: InputMaybe<Scalars['Int']['input']>;
-  rNEQ?: InputMaybe<Scalars['Int']['input']>;
+  r?: InputMaybe<Scalars['String']['input']>;
+  rGT?: InputMaybe<Scalars['String']['input']>;
+  rGTE?: InputMaybe<Scalars['String']['input']>;
+  rLT?: InputMaybe<Scalars['String']['input']>;
+  rLTE?: InputMaybe<Scalars['String']['input']>;
+  rNEQ?: InputMaybe<Scalars['String']['input']>;
 };
 
 export type System = {
@@ -312,7 +359,7 @@ export type SystemEdge = {
 export type GetEntitiesQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetEntitiesQuery = { __typename?: 'Query', entities?: { __typename?: 'EntityConnection', edges?: Array<{ __typename?: 'EntityEdge', node?: { __typename?: 'Entity', keys?: Array<string | null> | null, components?: Array<{ __typename: 'Moves', remaining?: any | null } | { __typename: 'Position', x?: any | null, y?: any | null } | { __typename: 'Random', r?: any | null } | null> | null } | null } | null> | null } | null };
+export type GetEntitiesQuery = { __typename?: 'Query', entities?: { __typename?: 'EntityConnection', edges?: Array<{ __typename?: 'EntityEdge', node?: { __typename?: 'Entity', keys?: Array<string | null> | null, components?: Array<{ __typename: 'Block', b?: any | null } | { __typename: 'Moves', remaining?: any | null } | { __typename: 'Position', x?: any | null, y?: any | null } | { __typename: 'Random', r?: any | null } | null> | null } | null } | null> | null } | null };
 
 
 export const GetEntitiesDocument = gql`
@@ -332,6 +379,9 @@ export const GetEntitiesDocument = gql`
           }
           ... on Random {
             r
+          }
+          ... on Block {
+            b
           }
         }
       }

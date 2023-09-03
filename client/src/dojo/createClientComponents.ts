@@ -11,5 +11,6 @@ export function createClientComponents({
     Position: overridableComponent(contractComponents.Position),
     Moves: overridableComponent(contractComponents.Moves),
     Random: overridableComponent(contractComponents.Random),
+    Block: overridableComponent(contractComponents.Block),
   };
 }

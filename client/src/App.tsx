@@ -5,13 +5,13 @@ import { Direction } from "./dojo/createSystemCalls";
 import { EntityIndex, setComponent } from "@latticexyz/recs";
 import { useEffect } from "react";
 import { getFirstComponentByType } from "./utils";
-import { Moves, Position, Random } from "./generated/graphql";
+import { Moves, Position, Random, Block } from "./generated/graphql";
 
 function App() {
   const {
     setup: {
       systemCalls: { spawn, move, random },
-      components: { Moves, Position, Random },
+      components: { Moves, Position, Random, Block },
       network: { graphSdk, call },
     },
     account: { create, list, select, account, isDeploying },
@@ -31,6 +31,10 @@ function App() {
   );
   const randomValue = useComponentValue(
     Random,
+    parseInt(entityId.toString()) as EntityIndex
+  );
+  const block = useComponentValue(
+    Block,
     parseInt(entityId.toString()) as EntityIndex
   );
 
@@ -53,6 +57,10 @@ function App() {
           data.entities?.edges,
           "Random"
         ) as Random;
+        const block = getFirstComponentByType(
+          data.entities?.edges,
+          "Block"
+        ) as Block;
 
         setComponent(Moves, parseInt(entityId.toString()) as EntityIndex, {
           remaining: remaining.remaining,
@@ -64,10 +72,18 @@ function App() {
         setComponent(Random, parseInt(entityId.toString()) as EntityIndex, {
           r: randomValue?.r,
         });
+        setComponent(Block, parseInt(entityId.toString()) as EntityIndex, {
+          b: block?.b,
+        });
       }
     };
     fetchData();
   }, [account.address]);
+
+  function randomMod(random) {
+    console.log("random", random);
+    return random % 1000;
+  }
 
   return (
     <>
@@ -98,7 +114,9 @@ function App() {
       </div>
       <div className="random">
         <button onClick={() => random(account)}>Randomize</button>
-        <div>Random: {randomValue ? `${randomValue["r"]}` : "No Value"}</div>
+        <div>
+          Random: {randomValue ? randomMod(randomValue["r"]) : "No Value"}
+        </div>
       </div>
 
       <div className="card">

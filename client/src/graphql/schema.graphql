@@ -15,6 +15,9 @@ query getEntities {
           ... on Random {
             r
           }
+          ... on Block {
+            b
+          }
         }
       }
     }

@@ -32,6 +32,20 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    Block: (() => {
+      const name = "Block";
+      return defineComponent(
+        world,
+        {
+          b: RecsType.Number,
+        },
+        {
+          metadata: {
+            name: name,
+          },
+        }
+      );
+    })(),
     Position: (() => {
       const name = "Position";
       return defineComponent(

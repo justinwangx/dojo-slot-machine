@@ -14,7 +14,7 @@ export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
 export function createSystemCalls(
   { execute, contractComponents }: SetupNetworkResult,
-  { Position, Moves, Random }: ClientComponents
+  { Position, Moves, Random, Block }: ClientComponents
 ) {
   const spawn = async (signer: Account) => {
     const entityId = parseInt(signer.address) as EntityIndex;
@@ -65,15 +65,20 @@ export function createSystemCalls(
   const random = async (signer: Account) => {
     const entityId = parseInt(signer.address) as EntityIndex;
     try {
-      const tx = await execute(signer, "random", []);
-      console.log(tx);
+      const tx = await execute(signer, "block", []);
       const receipt = await signer.waitForTransaction(tx.transaction_hash, {
         retryInterval: 100,
       });
       console.log(receipt);
+      /*const tx2 = await execute(signer, "random", []);
+      const receipt2 = await signer.waitForTransaction(tx2.transaction_hash, {
+        retryInterval: 100,
+      });
+      console.log(receipt2);*/
       const events = parseEvent(receipt);
-      const entity = parseInt(events[0].entity.toString()) as EntityIndex;
-      const randomEvent = events[0] as Random;
+      const entity = parseInt(events[1].entity.toString()) as EntityIndex;
+      const randomEvent = events[1];
+      console.log(randomEvent);
       setComponent(contractComponents.Random, entity, {
         r: randomEvent.r,
       });
@@ -155,6 +160,7 @@ export enum ComponentEvents {
   Moves = "Moves",
   Position = "Position",
   Random = "Random",
+  Block = "Block",
 }
 
 export interface BaseEvent {
@@ -210,6 +216,20 @@ export const parseEvent = (
         };
 
         events.push(randomData);
+        break;
+
+      case ComponentEvents.Block:
+        if (raw.data.length < 6) {
+          throw new Error("Insufficient data for Block event.");
+        }
+
+        const blockData: Block = {
+          type: ComponentEvents.Block,
+          entity: raw.data[2],
+          r: Number(raw.data[5]),
+        };
+
+        events.push(blockData);
         break;
 
       case ComponentEvents.Position:
