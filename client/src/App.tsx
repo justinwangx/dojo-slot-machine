@@ -60,16 +60,6 @@ function App() {
     if (r !== undefined) setRandomValue(r);
   }
 
-  const scoreStyle = {
-    position: "absolute",
-    bottom: "10px",
-    right: "10px",
-    backgroundColor: "#FE3733",
-    padding: "5px",
-    borderRadius: "5px",
-    color: "#fff",
-  };
-
   return (
     <>
       {" "}
@@ -90,19 +80,43 @@ function App() {
         random={randomValue ? randomMod(randomValue) : 0}
       />
       <Button onClick={() => reset(account)}>Start Score</Button>
-      {account.address && (
-        <Button
-          onClick={async () => {
-            console.log("list", list());
-            await create();
+      <Box
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          right: "10px",
+          display: "flex", // Add this CSS property
+          alignItems: "center", // Center items vertically
+        }}
+      >
+        {account.address && (
+          <Button
+            onClick={async () => {
+              console.log("list", list());
+              await create();
+            }}
+            isDisabled={isDeploying}
+            isLoading={isDeploying}
+          >
+            {isDeploying ? "Resetting" : "Reset"}
+          </Button>
+        )}
+        <div
+          style={{
+            fontSize: "20px",
+            backgroundColor: "#FE3733",
+            padding: "5px",
+            paddingLeft: "20px",
+            paddingRight: "20px",
+            borderRadius: "5px",
+            color: "#fff",
+            marginLeft: "10px",
           }}
-          isDisabled={isDeploying}
-          isLoading={isDeploying}
         >
-          {isDeploying ? "Resetting" : "Reset"}
-        </Button>
-      )}
-      <Box style={scoreStyle}>{score}</Box> {/* Use a Box for the score */}
+          {score}
+        </div>
+      </Box>
+      {/* Use a Box for the score */}
     </>
   );
 }
