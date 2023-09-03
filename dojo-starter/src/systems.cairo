@@ -113,16 +113,15 @@ mod block {
         let long_block_number:u128 = block_number.into();
         let hash_block:u128 = hash_random_u128(long_block_number);
         let random1000:u128 = hash_block % 125;
-        //let mut random = get!(ctx.world, ctx.origin, Random);
-        //if(random.score == 0) {
-        //    return ();
-        //}
+        let mut random = get!(ctx.world, ctx.origin, Random);
+        if(random.score == 0) {
+            return ();
+        }
         let mut score:u32 = 1;
         if(random1000 == 0 || random1000 == 31 || random1000 == 62 || random1000 == 93 || random1000 == 124) {
-            //random.score += 25;
-            score = 25;
+            random.score += 25;
         } else {
-            //random.score -= 1;
+            random.score -= 1;
         }
 
         //set!(
@@ -138,7 +137,7 @@ mod block {
             ctx.world,
             (
                 Random {
-                    player: ctx.origin, r: random1000, score: score
+                    player: ctx.origin, r: random1000, score: random.score
                 
                     },
                     

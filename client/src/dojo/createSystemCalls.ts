@@ -37,7 +37,7 @@ export function createSystemCalls(
       setComponent(contractComponents.Random, entity, {
         r: randomEvent.r,
       });
-      return randomEvent.r;
+      return randomEvent;
     } catch (e) {
       console.log(e);
     }

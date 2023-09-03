@@ -149,7 +149,7 @@ class App extends React.Component {
           />
           <div className="gradient-fade"></div>
         </div>
-        <RepeatButton onClick={this.handleClick} />;
+        <RepeatButton onClick={this.handleClick} />
       </div>
     );
   }

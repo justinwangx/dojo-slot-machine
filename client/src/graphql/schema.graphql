@@ -14,6 +14,7 @@ query getEntities {
           }
           ... on Random {
             r
+            score
           }
           ... on Block {
             b

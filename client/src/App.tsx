@@ -7,7 +7,7 @@ import { useEffect, useState } from "react";
 import { getFirstComponentByType } from "./utils";
 import { Moves, Position, Random, Block } from "./generated/graphql";
 import Slots from "./Slots";
-import { Button, HStack, Link, Text } from "@chakra-ui/react";
+import { Button, HStack, Link, Text, Box } from "@chakra-ui/react";
 
 // Truncate starknet address
 export const formatAddress = (address: string) => {
@@ -16,6 +16,7 @@ export const formatAddress = (address: string) => {
 
 function App() {
   const [randomValue, setRandomValue] = useState<Random>();
+  const [score, setScore] = useState<number>(0);
   const {
     setup: {
       systemCalls: { reset, random },
@@ -28,11 +29,14 @@ function App() {
   const fetchData = async () => {
     const { data } = await graphSdk.getEntities();
     if (data) {
-      const rand = getFirstComponentByType(
+      const vals = getFirstComponentByType(
         data.entities?.edges,
         "Random",
         account.address
-      ).r;
+      );
+      console.log(vals);
+      const rand = vals?.r;
+      setScore(vals?.score);
       if (rand !== randomValue) setRandomValue(rand);
     }
   };
@@ -49,24 +53,31 @@ function App() {
   }
 
   async function requestRandom() {
-    const r = await random(account);
+    const vals = await random(account);
+    const r = vals?.r;
+    setScore(vals?.score);
     console.log(r);
     if (r !== undefined) setRandomValue(r);
   }
 
+  const scoreStyle = {
+    position: "absolute",
+    bottom: "10px",
+    right: "10px",
+    backgroundColor: "#FE3733",
+    padding: "5px",
+    borderRadius: "5px",
+    color: "#fff",
+  };
+
   return (
-    <div>
-      <HStack
-        position="absolute"
-        top="0"
-        w="full"
-        p="20px"
-        gap="60px"
-        // justify="left"
-      >
+    <>
+      {" "}
+      {/* Wrap the entire component in a Box */}
+      <HStack position="absolute" top="0" w="full" p="20px" gap="60px">
         <Button
-          style={{ backgroundColor: "#FE3733" }}
-          isDisabled={isDeploying || account != undefined}
+          backgroundColor="#FE3733" // Use Chakra UI styling
+          isDisabled={isDeploying || account !== undefined}
           isLoading={isDeploying}
           onClick={create}
         >
@@ -78,19 +89,12 @@ function App() {
         requestRandom={requestRandom}
         random={randomValue ? randomMod(randomValue) : 0}
       />
-      <Button
-        onClick={() => {
-          reset(account);
-        }}
-      >
-        Start Score
-      </Button>
+      <Button onClick={() => reset(account)}>Start Score</Button>
       {account.address && (
         <Button
           onClick={async () => {
             console.log("list", list());
-            const account = await create();
-            console.log("account", account);
+            await create();
           }}
           isDisabled={isDeploying}
           isLoading={isDeploying}
@@ -98,7 +102,8 @@ function App() {
           {isDeploying ? "Resetting" : "Reset"}
         </Button>
       )}
-    </div>
+      <Box style={scoreStyle}>{score}</Box> {/* Use a Box for the score */}
+    </>
   );
 }
 
