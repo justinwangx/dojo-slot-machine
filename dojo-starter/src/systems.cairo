@@ -31,6 +31,64 @@ mod spawn {
 }
 
 #[system]
+mod spinner {
+    use core::result::ResultTrait;
+    use core::traits::Destruct;
+    use array::ArrayTrait;
+    use box::BoxTrait;
+    use traits::{Into, TryInto};
+    use option::OptionTrait;
+    use dojo::world::Context;
+
+    use dojo_examples::components::Block;
+    use dojo_examples::components::Random;
+    use starknet::syscalls::get_execution_info_syscall;
+    use starknet::syscalls::get_block_hash_syscall;
+    use starknet::info::ExecutionInfo;
+    use starknet::info::BlockInfo;
+    use integer::{u128s_from_felt252, U128sFromFelt252Result};
+
+    fn hash_random_u128(seed: u128) -> u128 {
+        let hash = pedersen(seed.into(), 1);
+        match u128s_from_felt252(hash) {
+            U128sFromFelt252Result::Narrow(x) => x,
+            U128sFromFelt252Result::Wide((_, x)) => x,
+        }
+    }
+    fn execute(ctx: Context, bet: u32, num: u128) {
+        let execution_info:ExecutionInfo = get_execution_info_syscall().unwrap().unbox();
+        let block_info:BlockInfo = execution_info.block_info.unbox(); // Reference to BlockInfo
+        let block_number:u64 = block_info.block_number;
+        let long_block_number:u128 = block_number.into();
+        let hash_block:u128 = hash_random_u128(long_block_number);
+        let random1000:u128 = hash_block % 10 + 1;
+        let mut random = get!(ctx.world, ctx.origin, Random);
+        if(random.score == 0 || bet > random.score) {
+            return ();
+        }
+        let mut score:u32 = 1;
+        if(num == random1000) {
+            random.score += bet * 10;
+        } else {
+            random.score -= bet;
+        }
+
+        set!(
+            ctx.world,
+            (
+                Random {
+                    player: ctx.origin, r: random1000, score: random.score
+                
+                    },
+                    
+            )
+        );
+        return ();
+    }
+}
+
+
+#[system]
 mod random {
     use core::result::ResultTrait;
     use core::traits::Destruct;
@@ -123,15 +181,6 @@ mod block {
         } else {
             random.score -= 1;
         }
-
-        //set!(
-        //    ctx.world,
-        //    (
-        //        Block {
-        //            player: ctx.origin, b: block_number
-        //            },
-        //    )
-        //);
 
         set!(
             ctx.world,

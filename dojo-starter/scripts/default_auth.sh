@@ -18,5 +18,6 @@ sozo auth writer Random random --world $WORLD_ADDRESS
 sozo auth writer Random block --world $WORLD_ADDRESS
 sozo auth writer Block block --world $WORLD_ADDRESS
 sozo auth writer Block random --world $WORLD_ADDRESS
+sozo auth writer Random spinner --world $WORLD_ADDRESS
 
 echo "Default authorizations have been successfully set."

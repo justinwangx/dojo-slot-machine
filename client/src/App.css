@@ -47,7 +47,7 @@ h1 span {
   width: 128px;
   height: 564px;
   overflow: hidden;
-  background: #fff url(../public/Long.png) repeat-y;
+  background: #fff url(/Long.png) repeat-y;
   will-change: backgroundPosition;
   transition: 0.3s background-position ease-in-out;
   padding: 0 80px;

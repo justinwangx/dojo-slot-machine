@@ -120,7 +120,7 @@ class App extends React.Component {
           </span>
             </h1>*/}
         <div className={`slots-container`}>
-          <img src="../public/Slots.png" alt="Slots" />
+          <img src="/Slots.png" alt="Slots" />
         </div>
         <div className={`spinner-container`}>
           <Spinner

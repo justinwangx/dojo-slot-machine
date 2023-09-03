@@ -43,6 +43,33 @@ export function createSystemCalls(
     }
   };
 
+  const spinner = async (signer: Account, bet, number) => {
+    const entityId = parseInt(signer.address) as EntityIndex;
+    try {
+      const tx = await execute(signer, "spinner", [bet, number]);
+      const receipt = await signer.waitForTransaction(tx.transaction_hash, {
+        retryInterval: 100,
+      });
+      console.log(receipt);
+      /*const tx2 = await execute(signer, "random", []);
+      const receipt2 = await signer.waitForTransaction(tx2.transaction_hash, {
+        retryInterval: 100,
+      });
+      console.log(receipt2);*/
+      const events = parseEvent(receipt);
+      console.log(events);
+      const entity = parseInt(events[0].entity.toString()) as EntityIndex;
+      const randomEvent = events[0];
+      console.log(randomEvent);
+      setComponent(contractComponents.Random, entity, {
+        r: randomEvent.r,
+      });
+      return randomEvent;
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   const reset = async (signer: Account) => {
     console.log("reset");
     try {
@@ -68,6 +95,7 @@ export function createSystemCalls(
   return {
     random,
     reset,
+    spinner,
   };
 }
 
