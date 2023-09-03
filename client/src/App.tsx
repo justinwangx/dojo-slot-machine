@@ -15,7 +15,7 @@ export const formatAddress = (address: string) => {
   return address.slice(0, 6) + "..." + address.slice(-4);
 };
 
-function App() {
+function App({ setComponent }) {
   const [randomValue, setRandomValue] = useState<Random>();
   const [score, setScore] = useState<number>(0);
   const [resetting, setResetting] = useState<boolean>(false);
@@ -89,17 +89,14 @@ function App() {
         requestRandom={requestRandom}
         random={randomValue ? randomMod(randomValue) : 0}
       />
-      <Box style={{
-        position: "absolute",
-        bottom: "10px",
-        left: "10px"
-      }}>
-        <Button
-        onClick={async () => {
-
-        }}>
-          Leaderboard
-        </Button>
+      <Box
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          left: "10px",
+        }}
+      >
+        <Button onClick={async () => {}}>Leaderboard</Button>
       </Box>
       <Box
         style={{
@@ -138,6 +135,29 @@ function App() {
         >
           {score}
         </div>
+      </Box>
+      <Box
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          left: "10px",
+        }}
+      >
+        <Button
+          onClick={async () => {
+            setComponent("Leaderboard");
+          }}
+        >
+          Leaderboard
+        </Button>
+        <Button
+          style={{ marginLeft: "0.5em" }}
+          onClick={async () => {
+            setComponent("Roulette");
+          }}
+        >
+          Roulette
+        </Button>
       </Box>
       {/* Use a Box for the score */}
     </>

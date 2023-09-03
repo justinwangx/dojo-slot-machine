@@ -22,7 +22,7 @@ export const formatAddress = (address: string) => {
   return address.slice(0, 6) + "..." + address.slice(-4);
 };
 
-export default function Roulette() {
+export default function Roulette({ setComponent }) {
   const [randomValue, setRandomValue] = useState<Random>();
   const [score, setScore] = useState<number>(0);
   const [resetting, setResetting] = useState<boolean>(false);
@@ -115,6 +115,29 @@ export default function Roulette() {
           {account ? formatAddress(account.address) : "Create Burner"}
         </Button>
       </HStack>
+      <Box
+        style={{
+          position: "absolute",
+          bottom: "10px",
+          left: "10px",
+        }}
+      >
+        <Button
+          onClick={async () => {
+            setComponent("Slots");
+          }}
+        >
+          Slots
+        </Button>
+        <Button
+          style={{ marginLeft: "0.5em" }}
+          onClick={async () => {
+            setComponent("Leaderboard");
+          }}
+        >
+          Leaderboard
+        </Button>
+      </Box>
       <VStack spacing={4} top="20">
         <Box borderWidth="1px" borderRadius="lg" p={4}>
           <HStack spacing={4}>

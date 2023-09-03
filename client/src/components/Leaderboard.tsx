@@ -32,7 +32,7 @@ export const formatAddress = (address: string) => {
   return address.slice(0, 6) + "..." + address.slice(-4);
 };
 
-function Leaderboard() {
+function Leaderboard({ setComponent }) {
   const [score, setScore] = useState<number>(0);
   const [leaderboardData, setLeaderboardData] =
     useState<GetEntitiesQuery | null>(null);
@@ -52,7 +52,9 @@ function Leaderboard() {
 
   useEffect(() => {
     fetchData();
-  });
+  }, []);
+
+  console.log(account.address);
 
   return (
     <>
@@ -102,7 +104,14 @@ function Leaderboard() {
                       b.node.components[0].score - a.node.components[0].score
                   ) // Sort by score in descending order
                   .map((edge, index) => (
-                    <Tr key={index}>
+                    <Tr
+                      key={index}
+                      style={
+                        edge.node.keys[0] === account.address
+                          ? { color: "#FE3733" }
+                          : null
+                      }
+                    >
                       <Td>{formatAddress(edge.node.keys[0])}</Td>
                       {edge.node.components.map((component, i) => (
                         <Td key={i}>{component.score}</Td>
@@ -123,7 +132,21 @@ function Leaderboard() {
           left: "10px",
         }}
       >
-        <Button onClick={async () => {}}>Back</Button>
+        <Button
+          onClick={async () => {
+            setComponent("Slots");
+          }}
+        >
+          Slots
+        </Button>
+        <Button
+          style={{ marginLeft: "0.5em" }}
+          onClick={async () => {
+            setComponent("Roulette");
+          }}
+        >
+          Roulette
+        </Button>
       </Box>
       <Box
         style={{
