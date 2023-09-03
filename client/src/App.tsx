@@ -1,4 +1,5 @@
 import "./App.css";
+import Leaderboard from "./components/Leaderboard";
 import { useDojo } from "./DojoContext";
 import { useComponentValue } from "@dojoengine/react";
 import { Direction } from "./dojo/createSystemCalls";
@@ -88,6 +89,18 @@ function App() {
         requestRandom={requestRandom}
         random={randomValue ? randomMod(randomValue) : 0}
       />
+      <Box style={{
+        position: "absolute",
+        bottom: "10px",
+        left: "10px"
+      }}>
+        <Button
+        onClick={async () => {
+
+        }}>
+          Leaderboard
+        </Button>
+      </Box>
       <Box
         style={{
           position: "absolute",
