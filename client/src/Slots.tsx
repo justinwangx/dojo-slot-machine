@@ -47,12 +47,10 @@ class App extends React.Component {
   ): void {
     if (prevProps.random !== this.props.random) {
       const random = this.props.random;
-      const total = totalSymbols;
-      const total2 = totalSymbols * totalSymbols;
-      const total3 = totalSymbols * totalSymbols * totalSymbols;
-      const target1 = Math.floor(random / total3);
-      const target2 = Math.floor((random % total3) / total2);
-      const target3 = Math.floor((random % total2) / total);
+      const mod = totalSymbols;
+      const target1 = Math.floor(random / (mod * mod));
+      const target2 = Math.floor((random % (mod * mod)) / mod);
+      const target3 = random % mod;
       console.log([target1, target2, target3]);
       this.setState({ targets: [target1, target2, target3] });
 

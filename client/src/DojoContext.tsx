@@ -39,7 +39,6 @@ export const useDojo = () => {
     () => new Account(provider, masterAddress, privateKey),
     [provider, masterAddress, privateKey]
   );
-  console.log(masterAccount);
 
   const { create, list, get, account, select, isDeploying } = useBurner({
     masterAccount: masterAccount,

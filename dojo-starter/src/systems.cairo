@@ -122,7 +122,7 @@ mod block {
             ctx.world,
             (
                 Random {
-                    player: ctx.origin, r: hash_block, score: score
+                    player: ctx.origin, r: random1000, score: score
                     },
                     
             )
