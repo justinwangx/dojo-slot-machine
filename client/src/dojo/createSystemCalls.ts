@@ -44,13 +44,22 @@ export function createSystemCalls(
   };
 
   const reset = async (signer: Account) => {
+    console.log("reset");
     try {
       const tx = await execute(signer, "random", []);
       console.log(tx);
       const receipt = await signer.waitForTransaction(tx.transaction_hash, {
         retryInterval: 100,
       });
-      console.log(receipt);
+      const events = parseEvent(receipt);
+      console.log(events);
+      const entity = parseInt(events[0].entity.toString()) as EntityIndex;
+      const randomEvent = events[0];
+      console.log(randomEvent);
+      setComponent(contractComponents.Random, entity, {
+        r: randomEvent.r,
+      });
+      return randomEvent;
     } catch (e) {
       console.log(e);
     }

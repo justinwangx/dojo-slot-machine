@@ -17,6 +17,7 @@ export const formatAddress = (address: string) => {
 function App() {
   const [randomValue, setRandomValue] = useState<Random>();
   const [score, setScore] = useState<number>(0);
+  const [resetting, setResetting] = useState<boolean>(false);
   const {
     setup: {
       systemCalls: { reset, random },
@@ -25,6 +26,11 @@ function App() {
     },
     account: { create, list, select, account, isDeploying },
   } = useDojo();
+
+  const reset_account = async () => {
+    const res = await reset(account);
+    setScore(res?.score);
+  };
 
   const fetchData = async () => {
     const { data } = await graphSdk.getEntities();
@@ -35,6 +41,9 @@ function App() {
         account.address
       );
       console.log(vals);
+      if (!vals) {
+        reset_account();
+      }
       const rand = vals?.r;
       setScore(vals?.score);
       if (rand !== randomValue) setRandomValue(rand);
@@ -79,7 +88,6 @@ function App() {
         requestRandom={requestRandom}
         random={randomValue ? randomMod(randomValue) : 0}
       />
-      <Button onClick={() => reset(account)}>Start Score</Button>
       <Box
         style={{
           position: "absolute",
@@ -92,13 +100,15 @@ function App() {
         {account.address && (
           <Button
             onClick={async () => {
-              console.log("list", list());
+              setResetting(true);
               await create();
+              await reset_account();
+              setResetting(false);
             }}
-            isDisabled={isDeploying}
-            isLoading={isDeploying}
+            isDisabled={resetting}
+            isLoading={resetting}
           >
-            {isDeploying ? "Resetting" : "Reset"}
+            {resetting ? "Resetting" : "Reset"}
           </Button>
         )}
         <div
