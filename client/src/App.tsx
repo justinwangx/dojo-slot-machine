@@ -6,6 +6,7 @@ import { EntityIndex, setComponent } from "@latticexyz/recs";
 import { useEffect } from "react";
 import { getFirstComponentByType } from "./utils";
 import { Moves, Position, Random, Block } from "./generated/graphql";
+import Slots from "./Slots";
 
 function App() {
   const {
@@ -87,6 +88,7 @@ function App() {
 
   return (
     <>
+      <Slots />
       <button onClick={create}>
         {isDeploying ? "deploying burner" : "create burner"}
       </button>
@@ -102,32 +104,11 @@ function App() {
           })}
         </select>
       </div>
-      <div className="card">
-        <button onClick={() => spawn(account)}>Spawn</button>
-        <div>
-          Moves Left: {moves ? `${moves["remaining"]}` : "Need to Spawn"}
-        </div>
-        <div>
-          Position:{" "}
-          {position ? `${position["x"]}, ${position["y"]}` : "Need to Spawn"}
-        </div>
-      </div>
       <div className="random">
         <button onClick={() => random(account)}>Randomize</button>
         <div>
           Random: {randomValue ? randomMod(randomValue["r"]) : "No Value"}
         </div>
-      </div>
-
-      <div className="card">
-        <button onClick={() => move(account, Direction.Up)}>Move Up</button>{" "}
-        <br />
-        <button onClick={() => move(account, Direction.Left)}>Move Left</button>
-        <button onClick={() => move(account, Direction.Right)}>
-          Move Right
-        </button>{" "}
-        <br />
-        <button onClick={() => move(account, Direction.Down)}>Move Down</button>
       </div>
     </>
   );
