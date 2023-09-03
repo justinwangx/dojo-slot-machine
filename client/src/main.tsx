@@ -8,7 +8,7 @@ import { DojoProvider } from "./DojoContext";
 import Leaderboard from "./components/Leaderboard.tsx";
 
 function Dapp() {
-  const [page, setPage] = useState("Leaderboard");
+  const [page, setPage] = useState("App");
   if (page == "Roulette") {
     return <Roulette setComponent={setPage} />;
   } else if (page == "Leaderboard") {

@@ -148,30 +148,6 @@ function Leaderboard({ setComponent }) {
           Roulette
         </Button>
       </Box>
-      <Box
-        style={{
-          position: "absolute",
-          bottom: "10px",
-          right: "10px",
-          display: "flex", // Add this CSS property
-          alignItems: "center", // Center items vertically
-        }}
-      >
-        <div
-          style={{
-            fontSize: "20px",
-            backgroundColor: "#FE3733",
-            padding: "5px",
-            paddingLeft: "20px",
-            paddingRight: "20px",
-            borderRadius: "5px",
-            color: "#fff",
-            marginLeft: "10px",
-          }}
-        >
-          {score}
-        </div>
-      </Box>
       {/* Use a Box for the score */}
     </>
   );
