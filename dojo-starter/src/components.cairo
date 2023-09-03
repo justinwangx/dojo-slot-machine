@@ -20,8 +20,8 @@ struct Position {
 struct Random {
     #[key]
     player: ContractAddress,
-    score: u128,
-    r: u128
+    score: u32,
+    r: u128,
 }
 
 #[derive(Component, Copy, Drop, Serde, SerdeLen)]

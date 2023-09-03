@@ -22,7 +22,7 @@ function RepeatButton(props) {
 
 function WinningSound() {
   return (
-    <audio autoplay="autoplay" className="player" preload="false">
+    <audio autoPlay={true} className="player" preload="false">
       <source src="https://andyhoffman.codes/random-assets/img/slots/winning_slot.wav" />
     </audio>
   );
@@ -47,13 +47,13 @@ class App extends React.Component {
   ): void {
     if (prevProps.random !== this.props.random) {
       const random = this.props.random;
-      const target1 = Math.floor(random * totalSymbols);
-      let remainder = random * totalSymbols;
-      remainder = remainder - Math.floor(remainder);
-      const target2 = Math.floor(remainder * totalSymbols);
-      remainder = remainder * totalSymbols;
-      remainder = remainder - Math.floor(remainder);
-      const target3 = Math.floor(remainder * totalSymbols);
+      const total = totalSymbols;
+      const total2 = totalSymbols * totalSymbols;
+      const total3 = totalSymbols * totalSymbols * totalSymbols;
+      const target1 = Math.floor(random / total3);
+      const target2 = Math.floor((random % total3) / total2);
+      const target3 = Math.floor((random % total2) / total);
+      console.log([target1, target2, target3]);
       this.setState({ targets: [target1, target2, target3] });
 
       this.setState({ winner: null });
@@ -103,12 +103,7 @@ class App extends React.Component {
     const getLoser = () => {
       return App.loser[Math.floor(Math.random() * App.loser.length)];
     };
-    let repeatButton = null;
     let winningSound = null;
-
-    if (winner !== null) {
-      repeatButton = <RepeatButton onClick={this.handleClick} />;
-    }
 
     if (winner) {
       winningSound = <WinningSound />;
@@ -129,7 +124,6 @@ class App extends React.Component {
         <div className={`slots-container`}>
           <img src="../public/Slots.png" alt="Slots" />
         </div>
-
         <div className={`spinner-container`}>
           <Spinner
             onFinish={this.finishHandler}
@@ -157,7 +151,7 @@ class App extends React.Component {
           />
           <div className="gradient-fade"></div>
         </div>
-        {repeatButton}
+        <RepeatButton onClick={this.handleClick} />;
       </div>
     );
   }

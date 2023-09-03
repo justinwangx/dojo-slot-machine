@@ -22,6 +22,7 @@ export type Scalars = {
   u8: { input: any; output: any; }
   u32: { input: any; output: any; }
   u64: { input: any; output: any; }
+  u128: { input: any; output: any; }
 };
 
 export type Block = {
@@ -279,7 +280,8 @@ export type QuerySystemCallArgs = {
 export type Random = {
   __typename?: 'Random';
   entity?: Maybe<Entity>;
-  r?: Maybe<Scalars['felt252']['output']>;
+  r?: Maybe<Scalars['u128']['output']>;
+  score?: Maybe<Scalars['u32']['output']>;
 };
 
 export type RandomConnection = {
@@ -300,7 +302,8 @@ export type RandomOrder = {
 };
 
 export enum RandomOrderOrderField {
-  R = 'R'
+  R = 'R',
+  Score = 'SCORE'
 }
 
 export type RandomWhereInput = {
@@ -310,6 +313,12 @@ export type RandomWhereInput = {
   rLT?: InputMaybe<Scalars['String']['input']>;
   rLTE?: InputMaybe<Scalars['String']['input']>;
   rNEQ?: InputMaybe<Scalars['String']['input']>;
+  score?: InputMaybe<Scalars['Int']['input']>;
+  scoreGT?: InputMaybe<Scalars['Int']['input']>;
+  scoreGTE?: InputMaybe<Scalars['Int']['input']>;
+  scoreLT?: InputMaybe<Scalars['Int']['input']>;
+  scoreLTE?: InputMaybe<Scalars['Int']['input']>;
+  scoreNEQ?: InputMaybe<Scalars['Int']['input']>;
 };
 
 export type System = {

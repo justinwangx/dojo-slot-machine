@@ -43,14 +43,15 @@ function App() {
   }, [account.address]);
 
   function randomMod(random) {
-    const div = 1000000;
-    return (random % div) / div;
+    const div = 125;
+    console.log(random % div);
+    return random % div;
   }
 
   async function requestRandom() {
     const r = await random(account);
     console.log(r);
-    setRandomValue(r);
+    if (r !== undefined) setRandomValue(r);
   }
 
   return (
@@ -72,10 +73,24 @@ function App() {
           {account ? formatAddress(account.address) : "Create Burner"}
         </Button>
       </HStack>
+      <br />
       <Slots
         requestRandom={requestRandom}
         random={randomValue ? randomMod(randomValue) : 0}
       />
+      {account.address && (
+        <Button
+          onClick={async () => {
+            console.log("list", list());
+            const account = await create();
+            console.log("account", account);
+          }}
+          isDisabled={isDeploying}
+          isLoading={isDeploying}
+        >
+          {isDeploying ? "Resetting" : "Reset"}
+        </Button>
+      )}
     </div>
   );
 }

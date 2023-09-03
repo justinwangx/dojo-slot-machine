@@ -103,6 +103,11 @@ mod block {
         let block_number:u64 = block_info.block_number;
         let long_block_number:u128 = block_number.into();
         let hash_block:u128 = hash_random_u128(long_block_number);
+        let random1000:u128 = hash_block % 125;
+        let mut score:u32 = 1;
+        if(random1000 == 0 || random1000 == 31 || random1000 == 62 || random1000 == 93 || random1000 == 124) {
+            score = 25;
+        }
 
         //set!(
         //    ctx.world,
@@ -117,7 +122,7 @@ mod block {
             ctx.world,
             (
                 Random {
-                    player: ctx.origin, r: hash_block
+                    player: ctx.origin, r: hash_block, score: score
                     },
                     
             )

@@ -16,52 +16,6 @@ export function createSystemCalls(
   { execute, contractComponents }: SetupNetworkResult,
   { Position, Moves, Random, Block }: ClientComponents
 ) {
-  const spawn = async (signer: Account) => {
-    const entityId = parseInt(signer.address) as EntityIndex;
-
-    const positionId = uuid();
-    Position.addOverride(positionId, {
-      entity: entityId,
-      value: { x: 1000, y: 1000 },
-    });
-
-    const movesId = uuid();
-    Moves.addOverride(movesId, {
-      entity: entityId,
-      value: { remaining: 100 },
-    });
-
-    try {
-      const tx = await execute(signer, "spawn", []);
-
-      console.log(tx);
-      const receipt = await signer.waitForTransaction(tx.transaction_hash, {
-        retryInterval: 100,
-      });
-      console.log(receipt);
-      const events = parseEvent(receipt);
-      const entity = parseInt(events[0].entity.toString()) as EntityIndex;
-
-      const movesEvent = events[0] as Moves;
-      setComponent(contractComponents.Moves, entity, {
-        remaining: movesEvent.remaining,
-      });
-
-      const positionEvent = events[1] as Position;
-      setComponent(contractComponents.Position, entity, {
-        x: positionEvent.x,
-        y: positionEvent.y,
-      });
-    } catch (e) {
-      console.log(e);
-      Position.removeOverride(positionId);
-      Moves.removeOverride(movesId);
-    } finally {
-      Position.removeOverride(positionId);
-      Moves.removeOverride(movesId);
-    }
-  };
-
   const random = async (signer: Account) => {
     const entityId = parseInt(signer.address) as EntityIndex;
     try {
@@ -76,8 +30,9 @@ export function createSystemCalls(
       });
       console.log(receipt2);*/
       const events = parseEvent(receipt);
-      const entity = parseInt(events[1].entity.toString()) as EntityIndex;
-      const randomEvent = events[1];
+      console.log(events);
+      const entity = parseInt(events[0].entity.toString()) as EntityIndex;
+      const randomEvent = events[0];
       console.log(randomEvent);
       setComponent(contractComponents.Random, entity, {
         r: randomEvent.r,
@@ -88,62 +43,7 @@ export function createSystemCalls(
     }
   };
 
-  const move = async (signer: Account, direction: Direction) => {
-    const entityId = parseInt(signer.address) as EntityIndex;
-
-    const positionId = uuid();
-    Position.addOverride(positionId, {
-      entity: entityId,
-      value: updatePositionWithDirection(
-        direction,
-        getComponentValue(Position, entityId) as Position
-      ),
-    });
-
-    const movesId = uuid();
-    Moves.addOverride(movesId, {
-      entity: entityId,
-      value: {
-        remaining: (getComponentValue(Moves, entityId)?.remaining || 0) - 1,
-      },
-    });
-
-    try {
-      const tx = await execute(signer, "move", [direction]);
-
-      console.log(tx);
-      const receipt = await signer.waitForTransaction(tx.transaction_hash, {
-        retryInterval: 100,
-      });
-
-      console.log(receipt);
-
-      const events = parseEvent(receipt);
-      const entity = parseInt(events[0].entity.toString()) as EntityIndex;
-
-      const movesEvent = events[0] as Moves;
-      setComponent(contractComponents.Moves, entity, {
-        remaining: movesEvent.remaining,
-      });
-
-      const positionEvent = events[1] as Position;
-      setComponent(contractComponents.Position, entity, {
-        x: positionEvent.x,
-        y: positionEvent.y,
-      });
-    } catch (e) {
-      console.log(e);
-      Position.removeOverride(positionId);
-      Moves.removeOverride(movesId);
-    } finally {
-      Position.removeOverride(positionId);
-      Moves.removeOverride(movesId);
-    }
-  };
-
   return {
-    spawn,
-    move,
     random,
   };
 }
@@ -206,32 +106,34 @@ export const parseEvent = (
         break;
 
       case ComponentEvents.Random:
-        if (raw.data.length < 6) {
+        if (raw.data.length < 7) {
           throw new Error("Insufficient data for Random event.");
         }
 
         const randomData: Random = {
           type: ComponentEvents.Random,
           entity: raw.data[2],
-          r: raw.data[5],
+          r: Number(raw.data[6]),
+          score: Number(raw.data[5]),
         };
 
         events.push(randomData);
         break;
 
-      case ComponentEvents.Block:
-        if (raw.data.length < 6) {
+      /*case ComponentEvents.Block:
+        if (raw.data.length < 7) {
           throw new Error("Insufficient data for Block event.");
         }
 
         const blockData: Block = {
           type: ComponentEvents.Block,
           entity: raw.data[2],
-          r: Number(raw.data[5]),
+          r: Number(raw.data[6]),
+          score: Number(raw.data[5]),
         };
 
         events.push(blockData);
-        break;
+        break;*/
 
       case ComponentEvents.Position:
         if (raw.data.length < 7) {
