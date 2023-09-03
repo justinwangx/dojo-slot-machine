@@ -18,7 +18,7 @@ function App() {
   const [randomValue, setRandomValue] = useState<Random>();
   const {
     setup: {
-      systemCalls: { spawn, move, random },
+      systemCalls: { reset, random },
       components: { Moves, Position, Random, Block },
       network: { graphSdk, call },
     },
@@ -78,6 +78,13 @@ function App() {
         requestRandom={requestRandom}
         random={randomValue ? randomMod(randomValue) : 0}
       />
+      <Button
+        onClick={() => {
+          reset(account);
+        }}
+      >
+        Start Score
+      </Button>
       {account.address && (
         <Button
           onClick={async () => {

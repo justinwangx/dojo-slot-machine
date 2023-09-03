@@ -15,6 +15,7 @@ for component in ${COMPONENTS[@]}; do
     sozo auth writer $component move --world $WORLD_ADDRESS
 done
 sozo auth writer Random random --world $WORLD_ADDRESS
+sozo auth writer Random block --world $WORLD_ADDRESS
 sozo auth writer Block block --world $WORLD_ADDRESS
 sozo auth writer Block random --world $WORLD_ADDRESS
 

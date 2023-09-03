@@ -43,8 +43,22 @@ export function createSystemCalls(
     }
   };
 
+  const reset = async (signer: Account) => {
+    try {
+      const tx = await execute(signer, "random", []);
+      console.log(tx);
+      const receipt = await signer.waitForTransaction(tx.transaction_hash, {
+        retryInterval: 100,
+      });
+      console.log(receipt);
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
   return {
     random,
+    reset,
   };
 }
 
