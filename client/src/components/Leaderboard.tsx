@@ -13,7 +13,19 @@ import {
   GetEntitiesQuery,
 } from "../generated/graphql";
 import Slots from "../Slots";
-import { Button, HStack, Link, Text, Box } from "@chakra-ui/react";
+import {
+  Button,
+  HStack,
+  Link,
+  Text,
+  Box,
+  Table,
+  Thead,
+  Tbody,
+  Tr,
+  Th,
+  Td,
+} from "@chakra-ui/react";
 
 // Truncate starknet address
 export const formatAddress = (address: string) => {
@@ -59,8 +71,9 @@ function Leaderboard() {
       <br />
       <div
         style={{
-          width: "100%",
-          height: "100dvh",
+          width: "100vw",
+          display: "flex",
+          justifyContent: "center", // Center horizontally
         }}
       >
         <Box
@@ -69,20 +82,35 @@ function Leaderboard() {
             display: "flex",
             fontSize: "24px",
             flexDirection: "column",
+            alignItems: "center", // Center horizontally
           }}
         >
           <h1>Leaderboard</h1>
           {leaderboardData ? (
-            leaderboardData.entities.edges.map((edge, index) => (
-              <div key={index}>
-                <div>Keys: {edge.node.keys.join(", ")}</div>
-                {edge.node.components.map((component, i) => (
-                  <div key={i}>
-                    <span>Score: {component.score}</span>
-                  </div>
-                ))}
-              </div>
-            ))
+            <Table variant="striped" colorScheme="teal">
+              <Thead>
+                <Tr>
+                  <Th>Keys</Th>
+                  <Th>Score</Th>
+                </Tr>
+              </Thead>
+              <Tbody>
+                {leaderboardData.entities.edges
+                  .slice() // Create a copy of the array
+                  .sort(
+                    (a, b) =>
+                      b.node.components[0].score - a.node.components[0].score
+                  ) // Sort by score in descending order
+                  .map((edge, index) => (
+                    <Tr key={index}>
+                      <Td>{formatAddress(edge.node.keys[0])}</Td>
+                      {edge.node.components.map((component, i) => (
+                        <Td key={i}>{component.score}</Td>
+                      ))}
+                    </Tr>
+                  ))}
+              </Tbody>
+            </Table>
           ) : (
             <p>Loading...</p>
           )}
