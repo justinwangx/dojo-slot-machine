@@ -1,14 +1,8 @@
-## Integrate React with Dojo: A Quick Start Guide
+## Ape Slots
 
-Dive into this straightforward example to understand how to meld React with Dojo.
-
-This integration taps into the powerful libraries designed by [Lattice](https://lattice.xyz/):
-
-- [recs](https://github.com/latticexyz/mud/tree/main/packages/recs)
+Ape Slots is an onchain slot machine. It uses the Dojo Engine, which uses Cairo to ensure provability on the StarkNet Blockchain.
 
 ### Initial Setup
-
-The repository already contains the `dojo-starter` as a submodule. Feel free to remove it if you prefer.
 
 **Prerequisites:** First and foremost, ensure that Dojo is installed on your system. If it isn't, you can easily get it set up with:
 
@@ -19,12 +13,12 @@ curl -L https://install.dojoengine.org | bash
 Followed by:
 
 ```console
-dojoup    
+dojoup
 ```
 
 For an in-depth setup guide, consult the [Dojo book](https://book.dojoengine.org/getting-started/quick-start.html).
 
-### Launch the Example in Under 30 Seconds
+### Launch the Game
 
 After cloning the project, execute the following:
 
@@ -38,12 +32,7 @@ cd dojo-starter && katana --disable-fee
 
 ```console
 cd dojo-starter && sozo build && sozo migrate
-
-// Basic Auth - This will allow burner Accounts to interact with the contracts
-sozo auth writer Position move
-sozo auth writer Position spawn
-sozo auth writer Moves move
-sozo auth writer Moves spawn
+scripts/default_auth.sh
 ```
 
 3. **Terminal 3 - Client**:
