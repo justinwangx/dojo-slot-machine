@@ -14,5 +14,6 @@ done
 for component in ${COMPONENTS[@]}; do
     sozo auth writer $component move --world $WORLD_ADDRESS
 done
+sozo auth writer Random random --world $WORLD_ADDRESS
 
 echo "Default authorizations have been successfully set."

@@ -8,6 +8,7 @@ import { EntityIndex, getComponentValue, setComponent } from "@latticexyz/recs";
 import { uuid } from "@latticexyz/utils";
 import { ClientComponents } from "./createClientComponents";
 import { updatePositionWithDirection } from "../utils";
+import { sign } from "crypto";
 
 export type SystemCalls = ReturnType<typeof createSystemCalls>;
 
@@ -37,7 +38,7 @@ export function createSystemCalls(
       const receipt = await signer.waitForTransaction(tx.transaction_hash, {
         retryInterval: 100,
       });
-
+      console.log(receipt);
       const events = parseEvent(receipt);
       const entity = parseInt(events[0].entity.toString()) as EntityIndex;
 
@@ -58,6 +59,26 @@ export function createSystemCalls(
     } finally {
       Position.removeOverride(positionId);
       Moves.removeOverride(movesId);
+    }
+  };
+
+  const random = async (signer: Account) => {
+    const entityId = parseInt(signer.address) as EntityIndex;
+    try {
+      const tx = await execute(signer, "random", []);
+      console.log(tx);
+      const receipt = await signer.waitForTransaction(tx.transaction_hash, {
+        retryInterval: 100,
+      });
+      console.log(receipt);
+      const events = parseEvent(receipt);
+      const entity = parseInt(events[0].entity.toString()) as EntityIndex;
+      const randomEvent = events[0] as Random;
+      setComponent(contractComponents.Random, entity, {
+        r: randomEvent.r,
+      });
+    } catch (e) {
+      console.log(e);
     }
   };
 
@@ -117,6 +138,7 @@ export function createSystemCalls(
   return {
     spawn,
     move,
+    random,
   };
 }
 
@@ -132,6 +154,7 @@ export enum Direction {
 export enum ComponentEvents {
   Moves = "Moves",
   Position = "Position",
+  Random = "Random",
 }
 
 export interface BaseEvent {
@@ -173,6 +196,20 @@ export const parseEvent = (
         };
 
         events.push(movesData);
+        break;
+
+      case ComponentEvents.Random:
+        if (raw.data.length < 6) {
+          throw new Error("Insufficient data for Random event.");
+        }
+
+        const randomData: Random = {
+          type: ComponentEvents.Random,
+          entity: raw.data[2],
+          r: Number(raw.data[5]),
+        };
+
+        events.push(randomData);
         break;
 
       case ComponentEvents.Position:

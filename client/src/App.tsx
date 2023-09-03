@@ -11,7 +11,7 @@ function App() {
   const {
     setup: {
       systemCalls: { spawn, move, random },
-      components: { Moves, Position },
+      components: { Moves, Position, Random },
       network: { graphSdk, call },
     },
     account: { create, list, select, account, isDeploying },
@@ -27,6 +27,10 @@ function App() {
   );
   const moves = useComponentValue(
     Moves,
+    parseInt(entityId.toString()) as EntityIndex
+  );
+  const randomValue = useComponentValue(
+    Random,
     parseInt(entityId.toString()) as EntityIndex
   );
 
@@ -45,6 +49,10 @@ function App() {
           data.entities?.edges,
           "Position"
         ) as Position;
+        const randomValue = getFirstComponentByType(
+          data.entities?.edges,
+          "Random"
+        ) as Random;
 
         setComponent(Moves, parseInt(entityId.toString()) as EntityIndex, {
           remaining: remaining.remaining,
@@ -52,6 +60,9 @@ function App() {
         setComponent(Position, parseInt(entityId.toString()) as EntityIndex, {
           x: position.x,
           y: position.y,
+        });
+        setComponent(Random, parseInt(entityId.toString()) as EntityIndex, {
+          r: randomValue?.r,
         });
       }
     };
@@ -85,6 +96,11 @@ function App() {
           {position ? `${position["x"]}, ${position["y"]}` : "Need to Spawn"}
         </div>
       </div>
+      <div className="random">
+        <button onClick={() => random(account)}>Randomize</button>
+        <div>Random: {randomValue ? `${randomValue["r"]}` : "No Value"}</div>
+      </div>
+
       <div className="card">
         <button onClick={() => move(account, Direction.Up)}>Move Up</button>{" "}
         <br />

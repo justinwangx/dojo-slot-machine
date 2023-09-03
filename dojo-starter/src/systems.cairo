@@ -48,7 +48,8 @@ mod random {
     fn execute(ctx: Context) {
         let execution_info:ExecutionInfo = get_execution_info_syscall().unwrap().unbox();
         let block_info:BlockInfo = execution_info.block_info.unbox(); // Reference to BlockInfo
-        let block_number:u64 = block_info.block_number;
+        let large_block_number:u64 = block_info.block_number;
+        let block_number:u32 = large_block_number.try_into().unwrap();
 
         set!(
             ctx.world,

@@ -18,6 +18,20 @@ export function defineContractComponents(world: World) {
         }
       );
     })(),
+    Random: (() => {
+      const name = "Random";
+      return defineComponent(
+        world,
+        {
+          r: RecsType.Number,
+        },
+        {
+          metadata: {
+            name: name,
+          },
+        }
+      );
+    })(),
     Position: (() => {
       const name = "Position";
       return defineComponent(

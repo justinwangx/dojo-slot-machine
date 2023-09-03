@@ -20,7 +20,7 @@ struct Position {
 struct Random {
     #[key]
     player: ContractAddress,
-    r: u64
+    r: u32
 }
 
 
