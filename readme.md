@@ -1,5 +1,7 @@
 ## Ape Slots
 
+![Ape Slots](graphic.png)
+
 Ape Slots is an onchain slot machine. It uses the Dojo Engine, which uses Cairo to ensure provability on the StarkNet Blockchain.
 
 ### Initial Setup
